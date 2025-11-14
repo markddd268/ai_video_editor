@@ -109,17 +109,11 @@ AI分析结果以JSON格式返回，包含以下结构：
 {
     "timeline": [
         {
-            "time": {
-                "start_time": "0",
-                "end_time": "0.9"
-            },
+            "timespan":"0s-0.9s",
             "content": "此处填写描述"
         },
         {
-            "time": {
-                "start_time": "0.9",
-                "end_time": "1.5"
-            },
+            "timespan":"0.9s-1.5s",
             "content": "此处填写描述"
         }
     ],
@@ -130,9 +124,7 @@ AI分析结果以JSON格式返回，包含以下结构：
 ### 输出说明
 
 - **timeline**: 时间轴数组，包含各个时间段的分析
-  - **time**: 时间段信息，包含开始时间和结束时间
-    - **start_time**: 开始时间（秒）
-    - **end_time**: 结束时间（秒）
+  - **timespan**: 时间段信息，包含开始时间和结束时间
   - **content**: 该时间段的详细内容描述
 - **summarize**: 整个视频的总结描述
 
