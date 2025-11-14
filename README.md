@@ -60,6 +60,11 @@ PROCESSING_CONFIG = {
     "output_dir": "results",        # 结果输出目录
     "delay_between_requests": 3     # API请求间隔(秒)
 }
+
+# 提示词配置
+PROMPT_CONFIG = {
+    "video_analysis_prompt": "自定义视频分析提示词，可根据需要修改"
+}
 ```
 
 ### 获取API密钥
@@ -67,6 +72,18 @@ PROCESSING_CONFIG = {
 1. 访问 [火山引擎控制台](https://console.volcengine.com/ark/region:ark+cn-beijing/apikey)
 2. 创建或选择API密钥
 3. 将密钥填入配置文件中的 `api_key` 字段
+
+### 自定义提示词
+
+在 `config.py` 文件中，您可以通过修改 `PROMPT_CONFIG` 来自定义视频分析的提示词：
+
+```python
+PROMPT_CONFIG = {
+    "video_analysis_prompt": "您的自定义提示词内容..."
+}
+```
+
+默认提示词适用于广告视频分析，如果您需要分析其他类型的视频（如产品介绍、教学视频等），可以修改 `video_analysis_prompt` 的内容来自定义分析要求。
 
 ## 使用方法
 
@@ -96,26 +113,26 @@ AI分析结果以JSON格式返回，包含以下结构：
                 "start_time": "0",
                 "end_time": "0.9"
             },
-            "content": "详细描述此时间段的内容"
+            "content": "此处填写描述"
         },
         {
             "time": {
                 "start_time": "0.9",
                 "end_time": "1.5"
             },
-            "content": "详细描述此时间段的内容"
+            "content": "此处填写描述"
         }
     ],
-    "summarize": "整体视频内容总结"
+    "summarize": "此处填写整体描述"
 }
 ```
 
 ### 输出说明
 
 - **timeline**: 时间轴数组，包含各个时间段的分析
-  - **time**: 时间段信息
-    - **start_time**: 开始时间(秒)
-    - **end_time**: 结束时间(秒)
+  - **time**: 时间段信息，包含开始时间和结束时间
+    - **start_time**: 开始时间（秒）
+    - **end_time**: 结束时间（秒）
   - **content**: 该时间段的详细内容描述
 - **summarize**: 整个视频的总结描述
 
