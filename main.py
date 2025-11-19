@@ -72,17 +72,21 @@ def process_video(video_path):
 
 # 批量处理视频目录下的所有视频
 def batch_process_videos(video_dir=PROCESSING_CONFIG["video_dir"], output_dir=PROCESSING_CONFIG["output_dir"]):
-    """批量处理视频目录下的所有视频文件"""
+    """批量处理视频目录下的所有视频文件，包括子目录中的视频"""
     
     # 创建输出目录
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     
-    # 获取所有视频文件
-    video_files = glob.glob(os.path.join(video_dir, "*.mp4"))
+    # 获取所有视频文件（包括子目录）
+    video_files = []
+    for root, _, files in os.walk(video_dir):
+        for file in files:
+            if file.lower().endswith('.mp4'):
+                video_files.append(os.path.join(root, file))
     
     if not video_files:
-        print(f"在目录 {video_dir} 中未找到任何MP4视频文件")
+        print(f"在目录 {video_dir} 及其子目录中未找到任何MP4视频文件")
         return
     
     print(f"找到 {len(video_files)} 个视频文件，开始批量处理...")
@@ -111,8 +115,22 @@ def batch_process_videos(video_dir=PROCESSING_CONFIG["video_dir"], output_dir=PR
             output_filename = f"{result['video_name']}_{batch_timestamp}.json"
             output_filepath = os.path.join(output_dir, output_filename)
             
-            with open(output_filepath, 'w', encoding='utf-8') as f:
-                f.write(result['result_content'])
+            # 解析AI返回的JSON内容
+            try:
+                json_result = json.loads(result['result_content'])
+                # 添加video_name字段
+                json_result['video_name'] = result['video_name']
+                # 保存更新后的JSON
+                with open(output_filepath, 'w', encoding='utf-8') as f:
+                    json.dump(json_result, f, ensure_ascii=False, indent=2)
+            except json.JSONDecodeError:
+                # 如果AI返回的不是有效的JSON，则创建一个包含video_name的新JSON
+                json_result = {
+                    'video_name': result['video_name'],
+                    'content': result['result_content']
+                }
+                with open(output_filepath, 'w', encoding='utf-8') as f:
+                    json.dump(json_result, f, ensure_ascii=False, indent=2)
             
             print(f"✓ 处理成功 - 结果已保存到: {output_filepath}")
             
