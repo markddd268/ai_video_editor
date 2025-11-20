@@ -99,6 +99,7 @@ def batch_process_videos(video_dir=PROCESSING_CONFIG["video_dir"], output_dir=PR
     processed_count = 0
     success_count = 0
     failed_count = 0
+    failed_videos = []
     
     # 处理每个视频文件
     for video_path in video_files:
@@ -136,6 +137,12 @@ def batch_process_videos(video_dir=PROCESSING_CONFIG["video_dir"], output_dir=PR
             
         else:
             failed_count += 1
+            failed_videos.append({
+                'path': video_path,
+                'name': result['video_name'],
+                'error': result['error'],
+                'index': processed_count
+            })
             print(f"✗ 处理失败 - 错误: {result['error']}")
         
         # 添加延迟，避免API请求过于频繁
@@ -149,6 +156,20 @@ def batch_process_videos(video_dir=PROCESSING_CONFIG["video_dir"], output_dir=PR
     print(f"成功: {success_count} 个")
     print(f"失败: {failed_count} 个")
     print(f"结果文件保存在: {output_dir} 目录")
+    
+    # 如果有失败的视频，记录详细信息
+    if failed_videos:
+        print("\n失败的视频详情:")
+        for i, failed_video in enumerate(failed_videos, 1):
+            print(f"{i}. [序号 {failed_video['index']}] {failed_video['name']}")
+            print(f"   路径: {failed_video['path']}")
+            print(f"   错误: {failed_video['error']}")
+        
+        # 保存失败记录到文件
+        failed_log_file = os.path.join(output_dir, f"failed_videos_{batch_timestamp}.json")
+        with open(failed_log_file, 'w', encoding='utf-8') as f:
+            json.dump(failed_videos, f, ensure_ascii=False, indent=2)
+        print(f"\n失败记录已保存到: {failed_log_file}")
 
 # 主程序
 if __name__ == "__main__":
